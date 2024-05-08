@@ -1,0 +1,58 @@
+[project]
+name = "gentoo-cache-manager"
+version = "0.1.0"
+description = "Helps tweaking build cache settings for individual packages"
+authors = [
+    {name = "Aliaksei Urbanski", email = "aliaksei.urbanski@gmail.com"},
+]
+classifiers = [
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux :: Gentoo Linux",
+    "Topic :: Software Development",
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+    "portage",
+    "termcolor",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.scripts]
+gcm = "gcm.cli:main"
+
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "mypy",
+    "ruff",
+]
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.format]
+quote-style = "single"
+
+[[tool.mypy.overrides]]
+module = [
+    "portage",
+    "portage.exception",
+    "portage.versions",
+]
+ignore_missing_imports = true

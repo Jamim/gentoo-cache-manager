@@ -1,0 +1,10 @@
+# virtual environment
+.venv/
+
+# byte-compiled / optimized files
+__pycache__/
+
+# pdm
+pdm.lock
+.pdm-python
+.pdm-build/
