@@ -1,6 +1,6 @@
 [project]
 name = "gentoo-cache-manager"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Helps tweaking build cache settings for individual packages"
 authors = [
     {name = "Aliaksei Urbanski", email = "aliaksei.urbanski@gmail.com"},
@@ -36,6 +36,7 @@ build-backend = "pdm.backend"
 
 
 [tool.pdm]
+version = { source = "file", path = "src/gcm/__init__.py" }
 distribution = true
 
 [tool.pdm.dev-dependencies]
