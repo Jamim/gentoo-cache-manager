@@ -49,10 +49,10 @@ class Enable(Command):
     for better understanding.
     """
 
-    START_MESSAGE = f'Enabling ccache for {PACKAGE_NAME}'
+    INVOKE_MESSAGE = f'Enabling ccache for {PACKAGE_NAME}'
 
     @staticmethod
-    def command(package: str) -> None:
+    def callback(package: str) -> None:  # type: ignore[override]
         ensure_file(
             file_dir=CCACHE_DIR / package,
             file_name='ccache.conf',

@@ -1,11 +1,15 @@
+import click
 import portage
 from portage.exception import PackageNotFound
 from portage.versions import pkgsplit
-from termcolor import colored
+
+
+def warn(message: str) -> None:
+    click.echo(click.style(message, 'yellow'))
 
 
 def pretty_name(name: str) -> str:
-    return colored(name, 'green', attrs=['bold'])
+    return click.style(name, 'green', bold=True)
 
 
 def normalize_package_name(name: str) -> str:

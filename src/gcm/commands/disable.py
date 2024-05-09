@@ -14,10 +14,10 @@ class Disable(Command):
     for better understanding.
     """
 
-    START_MESSAGE = f'Disabling ccache for {PACKAGE_NAME}'
+    INVOKE_MESSAGE = f'Disabling ccache for {PACKAGE_NAME}'
 
     @staticmethod
-    def command(package: str) -> None:
+    def callback(package: str) -> None:  # type: ignore[override]
         ensure_desired_env_line(
             desired=DISABLE_TEXT.format(package=package),
             undesired=ENABLE_TEXT.format(package=package),

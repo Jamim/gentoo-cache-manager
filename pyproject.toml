@@ -19,15 +19,15 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
+    "click",
     "portage",
-    "termcolor",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
 [project.scripts]
-gcm = "gcm.cli:main"
+gcm = "gcm.cli:cli"
 
 
 [build-system]

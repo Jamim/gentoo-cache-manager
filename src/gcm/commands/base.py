@@ -1,6 +1,11 @@
 from pathlib import Path
+from typing import Any
+
+import click
 
 from ..utils import pretty_name
+from .context import Context
+from .validators import validate_package_name
 
 CCACHE_DIR = Path('/var/cache/ccache')
 ENV_DIR = Path('/etc/portage/env')
@@ -34,14 +39,34 @@ def ensure_desired_env_line(desired: str, undesired: str) -> None:
             ccache.write(desired)
 
 
-class Command:
-    START_MESSAGE: str
+class Command(click.Command):
+    INVOKE_MESSAGE: str
 
+    context_class = Context
+
+    # https://github.com/python/mypy/issues/15015
     @staticmethod
-    def command(package: str) -> None:
+    def callback(package: str) -> None:  # type: ignore[override]
         raise NotImplementedError
 
-    @classmethod
-    def execute(cls, package: str) -> None:
-        print(cls.START_MESSAGE.format(package=package))
-        cls.command(package)
+    def __init__(self) -> None:
+        name = self.__class__.__name__.lower()
+        click.BaseCommand.__init__(self, name)
+
+        self.params = [
+            click.Argument(['package'], callback=validate_package_name)
+        ]
+        self.help = self.__class__.__doc__
+        self.epilog = None
+        self.options_metavar = '[OPTIONS]'
+        self.short_help = None
+        self.add_help_option = True
+        self.no_args_is_help = False
+        self.hidden = False
+        self.deprecated = False
+
+    def invoke(self, ctx: click.Context) -> Any:
+        click.echo(self.INVOKE_MESSAGE.format(**ctx.params))
+        result = super().invoke(ctx)
+        click.echo(click.style('Done :-)', 'green'))
+        return result
