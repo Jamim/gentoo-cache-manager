@@ -44,11 +44,20 @@ lint = [
     "mypy",
     "ruff",
 ]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-env",
+]
 [tool.ruff]
 line-length = 79
 
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.mypy]
+files = "src/**/*.py"
+strict = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -57,3 +66,12 @@ module = [
     "portage.exception",
 ]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--cov gcm"
+
+[tool.pytest_env]
+PORTAGE_CONFIGROOT = "tests/data"
+
+[tool.coverage.run]
+branch = true

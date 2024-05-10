@@ -8,3 +8,6 @@ __pycache__/
 pdm.lock
 .pdm-python
 .pdm-build/
+
+# test coverage data
+.coverage
