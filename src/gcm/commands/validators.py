@@ -16,7 +16,7 @@ def validate_package_name(ctx: Context, param: Argument, package: str) -> str:
         package = normalize_package_name(package)
     except AmbiguousPackageName as error:
         warn(f'The short name "{package}" is ambiguous:')
-        for name in error.args[0]:
+        for name in sorted(error.args[0]):
             click.echo(f'    {pretty_name(name)}')
         warn('Please specify one of the above fully-qualified names instead.')
         ctx.abort(AMBIGUOUS_PACKAGE_NAME)

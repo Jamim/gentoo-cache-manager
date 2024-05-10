@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 from portage.exception import AmbiguousPackageName, PackageNotFound
 
-from gcm.utils import warn, pretty_name, normalize_package_name
+from gcm.utils import normalize_package_name, pretty_name, warn
 
 
 @patch('click.echo')
@@ -26,7 +26,7 @@ def test_pretty_name():
         ('=net-misc/bar-1.0', 'net-misc/bar'),
     ),
 )
-def test_normalize_package_valid(name, expected):
+def test_normalize_package_name_valid(name, expected):
     package = normalize_package_name(name)
     assert package == expected
 
