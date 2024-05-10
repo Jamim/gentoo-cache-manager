@@ -1,4 +1,5 @@
-# virtual environment
+# virtual environments
+.tox/
 .venv/
 
 # byte-compiled / optimized files
