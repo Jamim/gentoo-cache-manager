@@ -53,7 +53,7 @@ quote-style = "single"
 [[tool.mypy.overrides]]
 module = [
     "portage",
+    "portage.dbapi.dep_expand",
     "portage.exception",
-    "portage.versions",
 ]
 ignore_missing_imports = true
