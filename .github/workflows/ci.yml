@@ -9,7 +9,7 @@ env:
 
 jobs:
   test:
-    name: 🧪 Test
+    name: '🧪 Test: Python ${{ matrix.python }}'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
