@@ -28,6 +28,12 @@ jobs:
         run: pdm install -G test --frozen-lockfile
       - name: Run pytest
         run: pdm run pytest -v
+      - name: Write coverage.xml
+        run: pdm run coverage xml
+      - name: Upload coverage data to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
     name: 🧐 Lint
