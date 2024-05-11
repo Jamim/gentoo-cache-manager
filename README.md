@@ -2,6 +2,7 @@
 
 [![CI][ci-badge]][ci]
 [![Coverage][cov-badge]][cov]
+[![License][license-badge]][license]
 
 **Gentoo Cache Manager** aims to help you tweaking build cache settings for individual packages in [Gentoo Linux][gentoo] and some [Gentoo-based][gentoo-based] operating systems.
 
@@ -21,6 +22,8 @@ gcm disable glibc
 [ci]: https://github.com/Jamim/gentoo-cache-manager/actions/workflows/ci.yml
 [cov-badge]: https://codecov.io/github/Jamim/gentoo-cache-manager/graph/badge.svg
 [cov]: https://app.codecov.io/github/Jamim/gentoo-cache-manager
+[license-badge]: https://img.shields.io/github/license/Jamim/gentoo-cache-manager
+[license]: https://github.com/Jamim/gentoo-cache-manager/blob/main/LICENSE
 [gentoo]: https://www.gentoo.org
 [gentoo-based]: https://wiki.gentoo.org/wiki/Distributions_based_on_Gentoo
 [ccache]: https://wiki.gentoo.org/wiki/Ccache
