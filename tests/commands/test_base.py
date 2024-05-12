@@ -2,6 +2,7 @@ import io
 from unittest.mock import call, patch
 
 import pytest
+
 from gcm.commands.base import PACKAGE_NAME, Command, ensure_desired_env_line
 
 DUMMY_CCACHE = """# foo
