@@ -8,7 +8,7 @@
 
 ## 🧑🏽‍🔬 Usage
 
-To enable [ccache][ccache] for `glibc`, run:
+To enable [ccache][ccache] for `sys-libs/glibc`, run:
 ```shell
 gcm enable glibc
 ```
@@ -16,6 +16,11 @@ gcm enable glibc
 To disable it, run:
 ```shell
 gcm disable glibc
+```
+
+To explore all available commands, run:
+```shell
+gcm --help
 ```
 
 [ci-badge]: https://img.shields.io/github/actions/workflow/status/Jamim/gentoo-cache-manager/ci.yml.svg
