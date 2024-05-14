@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import click
+
 from .base import (
     CCACHE_DIR,
     DISABLE_TEXT,
@@ -11,7 +13,7 @@ from .base import (
 )
 
 CCACHE_CONF = """# Maximum cache size to maintain
-max_size = 2.0G
+max_size = {max_size}
 
 # Allow others to run 'ebuild' and share the cache.
 umask = 002
@@ -51,12 +53,12 @@ class Enable(Command):
 
     INVOKE_MESSAGE = f'Enabling ccache for {PACKAGE_NAME}'
 
-    @staticmethod
-    def callback(package: str) -> None:  # type: ignore[override]
+    @staticmethod  # type: ignore[override]
+    def callback(package: str, max_size: str) -> None:
         ensure_file(
             file_dir=CCACHE_DIR / package,
             file_name='ccache.conf',
-            content=CCACHE_CONF,
+            content=CCACHE_CONF.format(max_size=max_size),
         )
         ensure_file(
             file_dir=ENV_DIR / package,
@@ -66,4 +68,15 @@ class Enable(Command):
         ensure_desired_env_line(
             desired=ENABLE_TEXT.format(package=package),
             undesired=DISABLE_TEXT.format(package=package),
+        )
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.params.append(
+            click.Option(
+                ['-m', '--max-size'],
+                default='1.0GiB',
+                show_default=True,
+                help='Maximum ccache size for a package.',
+            )
         )

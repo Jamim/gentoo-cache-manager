@@ -28,7 +28,7 @@ def test_main(callback, echo, exit_code, outcome):
     with pytest.raises(SystemExit):
         runpy.run_module('gcm.cli', run_name='__main__')
 
-    callback.assert_called_once_with(package='app-misc/foo')
+    callback.assert_called_once_with(package='app-misc/foo', max_size='1.0GiB')
     assert echo.call_args_list == [
         call('Enabling ccache for \x1b[32m\x1b[1mapp-misc/foo\x1b[0m'),
         outcome,

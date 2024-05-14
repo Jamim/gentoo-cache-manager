@@ -28,14 +28,20 @@ def test_ensure_file():
     out.write.assert_called_once_with(content)
 
 
+@pytest.mark.parametrize('max_size', ('512MiB', '2.0G', None))
 @patch('click.echo')
 @patch('gcm.commands.enable.ensure_desired_env_line')
 @patch('gcm.commands.enable.ensure_file')
-def test_disable(ensure_file, ensure_desired_env_line, echo):
+def test_disable(ensure_file, ensure_desired_env_line, echo, max_size):
     command = Enable()
+    if max_size:
+        args = ['foo', '--max-size', max_size]
+    else:
+        args = ['foo']
+        max_size = '1.0GiB'
 
     with pytest.raises(SystemExit):
-        command(['foo'])
+        command(args)
 
     package = 'app-misc/foo'
     echo.assert_any_call(
@@ -45,7 +51,7 @@ def test_disable(ensure_file, ensure_desired_env_line, echo):
         call(
             file_dir=CCACHE_DIR / package,
             file_name='ccache.conf',
-            content=CCACHE_CONF,
+            content=CCACHE_CONF.format(max_size=max_size),
         ),
         call(
             file_dir=ENV_DIR / package,
