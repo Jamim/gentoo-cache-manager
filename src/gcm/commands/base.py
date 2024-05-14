@@ -19,6 +19,8 @@ PACKAGE_NAME = pretty_name('{package}')
 def get_package_env_path() -> Path:
     if not PACKAGE_ENV_PATH.exists():
         PACKAGE_ENV_PATH.mkdir()
+    elif PACKAGE_ENV_PATH.is_file():
+        return PACKAGE_ENV_PATH
 
     return PACKAGE_ENV_PATH / 'ccache'
 

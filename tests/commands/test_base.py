@@ -17,19 +17,40 @@ bar
 """
 
 
-@pytest.mark.parametrize('exists', (True, False))
+@pytest.mark.parametrize(
+    'exists,is_file',
+    (
+        (True, True),
+        (True, False),
+        (False, None),
+    ),
+)
 @patch('gcm.commands.base.PACKAGE_ENV_PATH')
-def test_get_package_env_path(package_env_path, exists):
+def test_get_package_env_path(mock, exists, is_file):
+    mock.exists.return_value = exists
+    mock.is_file.return_value = is_file
+
     new_path = object()
-    package_env_path.exists.return_value = exists
-    package_env_path.__truediv__.return_value = new_path
+    truediv = mock.__truediv__
+    truediv.return_value = new_path
 
     path = get_package_env_path()
 
-    package_env_path.exists.assert_called_once_with()
-    assert package_env_path.mkdir.called is not exists
-    package_env_path.__truediv__.assert_called_once_with('ccache')
-    assert path is new_path
+    mock.exists.assert_called_once_with()
+
+    if exists:
+        mock.mkdir.assert_not_called()
+        mock.is_file.assert_called_once_with()
+    else:
+        mock.mkdir.assert_called_once_with()
+        mock.is_file.assert_not_called()
+
+    if is_file:
+        truediv.assert_not_called()
+        assert path is mock
+    else:
+        truediv.assert_called_once_with('ccache')
+        assert path is new_path
 
 
 @pytest.mark.parametrize(
