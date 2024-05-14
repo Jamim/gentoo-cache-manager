@@ -4,11 +4,9 @@ import subprocess
 
 import click
 
-from .base import (
-    CCACHE_DIR,
-    PACKAGE_NAME,
-    Command,
-)
+from ..utils import warn
+from .base import CCACHE_DIR, PACKAGE_NAME, Command
+from .exit_codes import CCACHE_BINARY_NOT_FOUND, OK
 
 COLORS = {
     'Cacheable calls': ('yellow', 'magenta'),
@@ -48,13 +46,18 @@ def colorize_data(data: str, stat_color: str, total_color: str) -> str:
     return DATA_TEMPLATE.format(**values)
 
 
-def show_stats(package: str) -> None:
-    stdout: io.TextIOWrapper = subprocess.Popen(
-        ['ccache', '-s'],
-        env={'CCACHE_DIR': CCACHE_DIR / package},
-        stdout=subprocess.PIPE,
-        text=True,
-    ).stdout  # type: ignore[assignment]
+def show_stats(package: str) -> int:
+    try:
+        stdout: io.TextIOWrapper = subprocess.Popen(
+            ['ccache', '-s'],
+            env={'CCACHE_DIR': CCACHE_DIR / package},
+            stdout=subprocess.PIPE,
+            text=True,
+        ).stdout  # type: ignore[assignment]
+    except FileNotFoundError:
+        warn('Unable to show stats due to missing ccache binary')
+        return CCACHE_BINARY_NOT_FOUND
+
     stats = stdout.readlines()
     for line in stats:
         match = STAT_REGEX.match(line)
@@ -71,6 +74,8 @@ def show_stats(package: str) -> None:
             line = f'  {line}'
         click.echo(line, nl=False)
 
+    return OK
+
 
 class Stats(Command):
     """Show ccache stats for a package."""
@@ -78,5 +83,5 @@ class Stats(Command):
     INVOKE_MESSAGE = f'Showing ccache stats for {PACKAGE_NAME}'
 
     @staticmethod
-    def callback(package: str) -> None:  # type: ignore[override]
-        show_stats(package)
+    def callback(package: str) -> int:  # type: ignore[override]
+        return show_stats(package)

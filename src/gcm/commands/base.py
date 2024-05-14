@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Any
 
 import click
 
@@ -46,7 +45,7 @@ class Command(click.Command):
 
     # https://github.com/python/mypy/issues/15015
     @staticmethod
-    def callback(package: str) -> None:  # type: ignore[override]
+    def callback(package: str) -> int | None:  # type: ignore[override]
         raise NotImplementedError
 
     def __init__(self) -> None:
@@ -65,8 +64,9 @@ class Command(click.Command):
         self.hidden = False
         self.deprecated = False
 
-    def invoke(self, ctx: click.Context) -> Any:
+    def invoke(self, ctx: Context) -> None:  # type: ignore[override]
         click.echo(self.INVOKE_MESSAGE.format(**ctx.params))
-        result = super().invoke(ctx)
+        code = super().invoke(ctx)
+        if code:
+            ctx.abort(code)
         click.echo(click.style('Done :-)', 'green'))
-        return result

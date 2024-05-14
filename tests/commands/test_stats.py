@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
+from gcm.commands.exit_codes import CCACHE_BINARY_NOT_FOUND
 from gcm.commands.stats import Stats
 
 MODERN_STATS = """Cacheable calls:   101 / 235 (42.98%)
@@ -76,7 +77,7 @@ LEGACY_OUTPUT = """Showing ccache stats for \x1b[32m\x1b[1mapp-misc/foo\x1b[0m
     ),
 )
 @patch('subprocess.Popen')
-def test_stats(popen, stats, output):
+def test_stats_ok(popen, stats, output):
     popen.return_value.stdout.readlines.return_value = [
         f'{line}\n' for line in stats.split('\n')
     ]
@@ -85,3 +86,17 @@ def test_stats(popen, stats, output):
 
     assert result.exit_code == 0
     assert result.output == output
+
+
+NO_CCACHE_OUTPUT = """Showing ccache stats for \x1b[32m\x1b[1mapp-misc/foo\x1b[0m
+\x1b[33mUnable to show stats due to missing ccache binary\x1b[0m
+\x1b[31mAborted!\x1b[0m
+"""  # noqa: E501
+
+
+@patch('subprocess.Popen', side_effect=FileNotFoundError)
+def test_stats_no_ccache(popen):
+    result = CliRunner().invoke(Stats(), ['foo'], color=True)
+
+    assert result.exit_code == CCACHE_BINARY_NOT_FOUND
+    assert result.output == NO_CCACHE_OUTPUT

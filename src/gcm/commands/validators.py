@@ -4,11 +4,7 @@ from portage.exception import AmbiguousPackageName, PackageNotFound
 
 from ..utils import normalize_package_name, pretty_name, warn
 from .context import Context
-
-# exit codes
-OK = 0
-AMBIGUOUS_PACKAGE_NAME = 1
-PACKAGE_NOT_FOUND = 2
+from .exit_codes import AMBIGUOUS_PACKAGE_NAME, PACKAGE_NOT_FOUND
 
 
 def validate_package_name(ctx: Context, param: Argument, package: str) -> str:
