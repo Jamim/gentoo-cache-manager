@@ -8,9 +8,7 @@ from .validators import validate_package_name
 
 CCACHE_DIR = Path('/var/cache/ccache')
 ENV_DIR = Path('/etc/portage/env')
-PACKAGE_ENV_DIR = Path('/etc/portage/package.env')
-
-ENV_CCACHE_PATH = PACKAGE_ENV_DIR / 'ccache'
+PACKAGE_ENV_PATH = Path('/etc/portage/package.env')
 
 ENABLE_TEXT = '{package}\t{package}/ccache.env\n'
 DISABLE_TEXT = f'# {ENABLE_TEXT}'
@@ -18,24 +16,32 @@ DISABLE_TEXT = f'# {ENABLE_TEXT}'
 PACKAGE_NAME = pretty_name('{package}')
 
 
+def get_package_env_path() -> Path:
+    if not PACKAGE_ENV_PATH.exists():
+        PACKAGE_ENV_PATH.mkdir()
+
+    return PACKAGE_ENV_PATH / 'ccache'
+
+
 def ensure_desired_env_line(desired: str, undesired: str) -> None:
-    ENV_CCACHE_PATH.touch()
-    with ENV_CCACHE_PATH.open('r+') as ccache:
-        ccache.seek(0)
-        lines = ccache.readlines()
+    path = get_package_env_path()
+    path.touch()
+    with path.open('r+') as env:
+        env.seek(0)
+        lines = env.readlines()
         written = desired in lines
         if undesired in lines:
-            ccache.seek(0)
+            env.seek(0)
             for line in lines:
                 if line == undesired:
                     if not written:
-                        ccache.write(desired)
+                        env.write(desired)
                         written = True
                 else:
-                    ccache.write(line)
-            ccache.truncate()
+                    env.write(line)
+            env.truncate()
         elif not written:
-            ccache.write(desired)
+            env.write(desired)
 
 
 class Command(click.Command):

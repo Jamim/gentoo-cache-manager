@@ -3,13 +3,33 @@ from unittest.mock import call, patch
 
 import pytest
 
-from gcm.commands.base import PACKAGE_NAME, Command, ensure_desired_env_line
+from gcm.commands.base import (
+    PACKAGE_NAME,
+    Command,
+    ensure_desired_env_line,
+    get_package_env_path,
+)
 
-DUMMY_CCACHE = """# foo
+DUMMY_ENV = """# foo
 bar
 # foo
 # baz
 """
+
+
+@pytest.mark.parametrize('exists', (True, False))
+@patch('gcm.commands.base.PACKAGE_ENV_PATH')
+def test_get_package_env_path(package_env_path, exists):
+    new_path = object()
+    package_env_path.exists.return_value = exists
+    package_env_path.__truediv__.return_value = new_path
+
+    path = get_package_env_path()
+
+    package_env_path.exists.assert_called_once_with()
+    assert package_env_path.mkdir.called is not exists
+    package_env_path.__truediv__.assert_called_once_with('ccache')
+    assert path is new_path
 
 
 @pytest.mark.parametrize(
@@ -25,18 +45,19 @@ bar
         ('# new\n', 'new\n', '# foo\nbar\n# foo\n# baz\n# new\n'),
     ),
 )
-@patch('gcm.commands.base.ENV_CCACHE_PATH')
+@patch('gcm.commands.base.get_package_env_path')
 def test_ensure_desired_env_line(
-    env_ccache_path, desired, undesired, expected
+    get_package_env_path, desired, undesired, expected
 ):
-    ccache = io.StringIO(DUMMY_CCACHE)
-    env_ccache_path.open.return_value.__enter__.return_value = ccache
+    env = io.StringIO(DUMMY_ENV)
+    path = get_package_env_path.return_value
+    path.open.return_value.__enter__.return_value = env
 
     ensure_desired_env_line(desired, undesired)
 
-    env_ccache_path.touch.assert_called_once()
-    env_ccache_path.open.assert_called_once_with('r+')
-    assert ccache.getvalue() == expected
+    path.touch.assert_called_once()
+    path.open.assert_called_once_with('r+')
+    assert env.getvalue() == expected
 
 
 def test_command_callback_not_implemented():
