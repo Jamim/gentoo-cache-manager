@@ -8,13 +8,15 @@ from click.testing import CliRunner
 import gcm
 from gcm.cli import cli
 
+from .base import ABORTED, DONE
+
 
 @pytest.mark.parametrize(
     'exit_code,outcome',
     (
-        (None, call('\x1b[32mDone :-)\x1b[0m')),
-        (0, call('\x1b[32mDone :-)\x1b[0m')),
-        (1, call('\x1b[31mAborted!\x1b[0m', err=True)),
+        (None, call(DONE)),
+        (0, call(DONE)),
+        (1, call(ABORTED, err=True)),
     ),
 )
 @patch.dict(sys.modules)
