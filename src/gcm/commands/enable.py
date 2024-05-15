@@ -53,6 +53,15 @@ class Enable(Command):
 
     INVOKE_MESSAGE = f'Enabling ccache for {PACKAGE_NAME}'
 
+    params = [
+        click.Option(
+            ['-m', '--max-size'],
+            default='1.0GiB',
+            show_default=True,
+            help='Maximum ccache size for a package.',
+        )
+    ]
+
     @staticmethod  # type: ignore[override]
     def callback(package: str, max_size: str) -> None:
         ensure_file(
@@ -68,15 +77,4 @@ class Enable(Command):
         ensure_desired_env_line(
             desired=ENABLE_TEXT.format(package=package),
             undesired=DISABLE_TEXT.format(package=package),
-        )
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.params.append(
-            click.Option(
-                ['-m', '--max-size'],
-                default='1.0GiB',
-                show_default=True,
-                help='Maximum ccache size for a package.',
-            )
         )

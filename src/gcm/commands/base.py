@@ -64,9 +64,12 @@ class Command(click.Command):
         name = self.__class__.__name__.lower()
         click.BaseCommand.__init__(self, name)
 
-        self.params = [
+        params = list(self.params) if hasattr(self, 'params') else []
+        params.append(
             click.Argument(['package'], callback=validate_package_name)
-        ]
+        )
+
+        self.params = params
         self.help = self.__class__.__doc__
         self.epilog = None
         self.options_metavar = '[OPTIONS]'
