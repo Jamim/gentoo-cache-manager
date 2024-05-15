@@ -47,8 +47,6 @@ jobs:
       - name: Install dependencies
         run: pdm install -G lint --frozen-lockfile
       - name: Lint with ruff
-        run: |
-          pdm run ruff check .
-          pdm run ruff format --check .
+        run: pdm run lint-ruff
       - name: Type check with mypy
         run: pdm run mypy

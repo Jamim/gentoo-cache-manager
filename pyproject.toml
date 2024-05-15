@@ -64,6 +64,9 @@ test = [
     "pytest-env",
 ]
 
+[tool.pdm.scripts]
+lint-ruff = "scripts/ruff"
+
 [tool.ruff]
 line-length = 79
 

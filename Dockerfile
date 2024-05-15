@@ -10,6 +10,7 @@ RUN emerge -q dev-python/tox
 
 WORKDIR /usr/src/gcm
 COPY pyproject.toml README.md tox.ini ./
+COPY scripts scripts
 COPY src src
 COPY tests tests
 
