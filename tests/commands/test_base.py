@@ -1,7 +1,8 @@
 import io
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 import pytest
+from click.testing import CliRunner
 
 from gcm.commands.base import (
     PACKAGE_NAME,
@@ -9,6 +10,8 @@ from gcm.commands.base import (
     ensure_desired_env_line,
     get_package_env_path,
 )
+
+from ..base import ABORTED, DONE
 
 DUMMY_ENV = """# foo
 bar
@@ -96,17 +99,22 @@ class DummyCommand(Command):
     def callback(self, package):
         self.callback_is_called = True
         assert package == 'app-misc/foo'
+        return self.exit_code
+
+    def __init__(self, exit_code=0) -> None:
+        super().__init__()
+        self.exit_code = exit_code
 
 
-@patch('click.echo')
-def test_command_invoke(echo):
-    command = DummyCommand()
+OUTPUT = 'Doing nothing with \x1b[32m\x1b[1mapp-misc/foo\x1b[0m\n{}\n'
 
-    with pytest.raises(SystemExit):
-        command(['foo'])
+
+@pytest.mark.parametrize('exit_code,outcome', ((0, DONE), (1, ABORTED)))
+def test_command_invoke(exit_code, outcome):
+    command = DummyCommand(exit_code)
+
+    result = CliRunner().invoke(command, ['foo'], color=True)
 
     assert command.callback_is_called
-    assert echo.call_args_list == [
-        call('Doing nothing with \x1b[32m\x1b[1mapp-misc/foo\x1b[0m'),
-        call('\x1b[32mDone :-)\x1b[0m'),
-    ]
+    assert result.exit_code == exit_code
+    assert result.output == OUTPUT.format(outcome)
