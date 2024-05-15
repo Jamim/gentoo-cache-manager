@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, call, patch
 
 import pytest
+from click.testing import CliRunner
 
 from gcm.commands.base import CCACHE_DIR, DISABLE_TEXT, ENABLE_TEXT, ENV_DIR
 from gcm.commands.enable import (
@@ -9,6 +10,8 @@ from gcm.commands.enable import (
     Enable,
     ensure_file,
 )
+
+from ..base import DONE
 
 
 def test_ensure_file():
@@ -29,23 +32,21 @@ def test_ensure_file():
 
 
 @pytest.mark.parametrize('max_size', ('512MiB', '2.0G', None))
-@patch('click.echo')
 @patch('gcm.commands.enable.ensure_desired_env_line')
 @patch('gcm.commands.enable.ensure_file')
-def test_disable(ensure_file, ensure_desired_env_line, echo, max_size):
-    command = Enable()
+def test_enable(ensure_file, ensure_desired_env_line, max_size):
     if max_size:
         args = ['foo', '--max-size', max_size]
     else:
         args = ['foo']
         max_size = '1.0GiB'
 
-    with pytest.raises(SystemExit):
-        command(args)
+    result = CliRunner().invoke(Enable(), args, color=True)
 
     package = 'app-misc/foo'
-    echo.assert_any_call(
-        'Enabling ccache for \x1b[32m\x1b[1mapp-misc/foo\x1b[0m'
+    assert result.exit_code == 0
+    assert result.output == (
+        f'Enabling ccache for \x1b[32m\x1b[1m{package}\x1b[0m\n{DONE}\n'
     )
     assert ensure_file.call_args_list == [
         call(
