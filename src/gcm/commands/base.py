@@ -16,6 +16,10 @@ DISABLE_TEXT = f'# {ENABLE_TEXT}'
 PACKAGE_NAME = pretty_name('{package}')
 
 
+def ccache_dir_env(package: str) -> dict[str, str]:
+    return {'CCACHE_DIR': str(CCACHE_DIR / package)}
+
+
 def get_package_env_path() -> Path:
     if not PACKAGE_ENV_PATH.exists():
         PACKAGE_ENV_PATH.mkdir()

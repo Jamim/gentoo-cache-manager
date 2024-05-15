@@ -5,7 +5,7 @@ import subprocess
 import click
 
 from ..utils import warn
-from .base import CCACHE_DIR, PACKAGE_NAME, Command
+from .base import PACKAGE_NAME, Command, ccache_dir_env
 from .exit_codes import CCACHE_BINARY_NOT_FOUND, OK
 
 COLORS = {
@@ -50,7 +50,7 @@ def show_stats(package: str) -> int:
     try:
         stdout: io.TextIOWrapper = subprocess.Popen(
             ['ccache', '-s'],
-            env={'CCACHE_DIR': CCACHE_DIR / package},
+            env=ccache_dir_env(package),
             stdout=subprocess.PIPE,
             text=True,
         ).stdout  # type: ignore[assignment]

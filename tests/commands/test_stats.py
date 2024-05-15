@@ -1,8 +1,10 @@
+import subprocess
 from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
 
+from gcm.commands.base import ccache_dir_env
 from gcm.commands.exit_codes import CCACHE_BINARY_NOT_FOUND
 from gcm.commands.stats import Stats
 
@@ -84,6 +86,12 @@ def test_stats_ok(popen, stats, output):
 
     result = CliRunner().invoke(Stats(), ['foo'], color=True)
 
+    popen.assert_called_once_with(
+        ['ccache', '-s'],
+        env=ccache_dir_env('app-misc/foo'),
+        stdout=subprocess.PIPE,
+        text=True,
+    )
     assert result.exit_code == 0
     assert result.output == output
 
@@ -98,5 +106,6 @@ NO_CCACHE_OUTPUT = """Showing ccache stats for \x1b[32m\x1b[1mapp-misc/foo\x1b[0
 def test_stats_no_ccache(popen):
     result = CliRunner().invoke(Stats(), ['foo'], color=True)
 
+    popen.assert_called_once()
     assert result.exit_code == CCACHE_BINARY_NOT_FOUND
     assert result.output == NO_CCACHE_OUTPUT

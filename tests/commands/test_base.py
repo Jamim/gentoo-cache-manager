@@ -5,8 +5,10 @@ import pytest
 from click.testing import CliRunner
 
 from gcm.commands.base import (
+    CCACHE_DIR,
     PACKAGE_NAME,
     Command,
+    ccache_dir_env,
     ensure_desired_env_line,
     get_package_env_path,
 )
@@ -18,6 +20,12 @@ bar
 # foo
 # baz
 """
+
+
+def test_ccache_dir_env():
+    package = 'app-misc/foo'
+    env = ccache_dir_env(package)
+    assert env == {'CCACHE_DIR': str(CCACHE_DIR / package)}
 
 
 @pytest.mark.parametrize(
